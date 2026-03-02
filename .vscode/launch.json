@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TelimedicalApplication<telimedical>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.project.telimedical.TelimedicalApplication",
+            "projectName": "telimedical",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

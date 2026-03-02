@@ -1,0 +1,12 @@
+.env
+.env.*
+node_modules/
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.mvn/
+mvnw
+mvnw.cmd

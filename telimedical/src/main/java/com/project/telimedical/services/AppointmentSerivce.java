@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.project.telimedical.Exceptions.AppointmentNotFound;
+import com.project.telimedical.Exceptions.IncorrectDateException;
 import com.project.telimedical.Exceptions.UserNotFoundExceptions;
 import com.project.telimedical.entities.Appointments;
 import com.project.telimedical.entities.Users;
@@ -115,6 +116,30 @@ return li;
         return appointmentsRepository.save(ap);
     }
 
+
+    public Appointments reschedule(UUID appUuid,LocalDateTime updatedStarTime,LocalDateTime upDatedEndtime){
+
+         Optional<Appointments> val = appointmentsRepository.findById(appUuid);
+        if(!val.isPresent()){
+            throw new AppointmentNotFound("cannot refund appoinment due to no appointment found");
+        }
+        Appointments ap  =val.get();
+        if(!updatedStarTime.isBefore(upDatedEndtime)){
+            throw new IncorrectDateException();
+        }
+        if(ap.getStarTime().isAfter(updatedStarTime)){
+            throw new IncorrectDateException();
+        }
+        ap.setStarTime(updatedStarTime);
+        ap.setEndTime(upDatedEndtime);
+
+        return appointmentsRepository.save(ap);
+    }    
+
+
+    public List<Appointments> getCommonAppointments(UUID patientId,UUID doctorId){
+        return appointmentsRepository.findByDoctor_IdAndPatient_Id(doctorId, patientId);
+    }
 
 
 

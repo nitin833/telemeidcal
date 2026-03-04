@@ -21,5 +21,7 @@ public interface AppointmentsRepository extends JpaRepository<Appointments,UUID>
     
     List<Appointments> findByPatientUserId(UUID user_id);
 
+     List<Appointments> findByDoctor_IdAndPatient_Id(UUID doctorId, UUID patientId);
+
    
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.project.telimedical.Exceptions.AppointmentNotFound;
 import com.project.telimedical.Exceptions.UserNotFoundExceptions;
 import com.project.telimedical.entities.Appointments;
 import com.project.telimedical.entities.Users;
@@ -77,6 +78,41 @@ return li;
         ap.setStatus("PAID");
         return appointmentsRepository.save(ap);
 
+    }
+
+
+    public Appointments acceptAppointments(UUID appoUuid){
+
+        Optional<Appointments> val = appointmentsRepository.findById(appoUuid);
+        if(!val.isPresent()){
+            throw new AppointmentNotFound("cannot accept appoinment due to no appointment found");
+        }
+        Appointments ap = val.get();
+        ap.setStatus("ACCEPTED");
+        return appointmentsRepository.save(ap);
+    }
+
+
+      public Appointments canclAppointments(UUID appoUuid){
+
+        Optional<Appointments> val = appointmentsRepository.findById(appoUuid);
+        if(!val.isPresent()){
+            throw new AppointmentNotFound("cannot cancel appoinment due to no appointment found");
+        }
+        Appointments ap = val.get();
+        ap.setStatus("CANCELLED");
+        return appointmentsRepository.save(ap);
+    }
+
+    public Appointments refundAppointment(UUID appUuid){
+
+         Optional<Appointments> val = appointmentsRepository.findById(appUuid);
+        if(!val.isPresent()){
+            throw new AppointmentNotFound("cannot refund appoinment due to no appointment found");
+        }
+        Appointments ap  =val.get();
+        ap.setStatus("REFUNDED");
+        return appointmentsRepository.save(ap);
     }
 
 

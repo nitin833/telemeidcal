@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.hibernate.annotations.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.project.telimedical.Exceptions.HospitalNotFoundException;
 import com.project.telimedical.Exceptions.UserNotFoundExceptions;
 import com.project.telimedical.HelperClasses.DoctorCreatorObject;
 import com.project.telimedical.entities.DoctorProfile;
+import com.project.telimedical.entities.Hospital;
 import com.project.telimedical.entities.Qualification;
 import com.project.telimedical.entities.Role;
 import com.project.telimedical.entities.Users;
 import com.project.telimedical.repository.DoctorProfileRepository;
+import com.project.telimedical.repository.HospitalRepository;
 import com.project.telimedical.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -27,6 +31,9 @@ public class UserService {
 
     @Autowired
     private DoctorProfileRepository doctorProfileRepository;
+
+    @Autowired
+    private HospitalRepository hospitalRepository;
 
    public List<Users> getAllUsers(){
     return userRepository.findAll();
@@ -72,12 +79,14 @@ public class UserService {
    }
 
 
+
    @Transactional
   public Users updateuser(Users user,UUID id)throws UserNotFoundExceptions{
     Users u1 = getUserById(id);
     u1.setEmail(user.getEmail());
     u1.setPassword(user.getPassword());
     u1.setUsername(user.getUsername());
+    
 
     userRepository.save(u1);
     return u1;
@@ -146,6 +155,6 @@ public class UserService {
       }
    }
 
-  
+
     
 }

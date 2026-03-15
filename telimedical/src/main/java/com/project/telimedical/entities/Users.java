@@ -12,6 +12,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -43,8 +45,38 @@ public class Users {
     List<Appointments> patient_appointments;
 
     
+   
+
+
     @OneToMany(mappedBy = "doctor",fetch = FetchType.LAZY)
     List<Appointments> doctor_appointments;
+
+    public List<Hospital> getWorking_hospitals() {
+        return working_hospitals;
+    }
+
+
+    public void setWorking_hospitals(List<Hospital> working_hospitals) {
+        this.working_hospitals = working_hospitals;
+    }
+
+
+    public List<Hospital> getOwning_hospitals() {
+        return owning_hospitals;
+    }
+
+
+    public void setOwning_hospitals(List<Hospital> owning_hospitals) {
+        this.owning_hospitals = owning_hospitals;
+    }
+
+
+    @ManyToMany(mappedBy = "doctors")
+    List<Hospital> working_hospitals;
+
+    @ManyToMany(mappedBy = "owners")
+    List<Hospital> owning_hospitals;
+    
 
 
     public UUID getUserId() {

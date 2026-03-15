@@ -94,7 +94,7 @@ return li;
     }
 
 
-      public Appointments canclAppointments(UUID appoUuid){
+      public Appointments cancelAppointments(UUID appoUuid){
 
         Optional<Appointments> val = appointmentsRepository.findById(appoUuid);
         if(!val.isPresent()){
@@ -105,7 +105,7 @@ return li;
         return appointmentsRepository.save(ap);
     }
 
-    public Appointments refundAppointment(UUID appUuid){
+   /*  public Appointments refundAppointment(UUID appUuid){
 
          Optional<Appointments> val = appointmentsRepository.findById(appUuid);
         if(!val.isPresent()){
@@ -114,7 +114,7 @@ return li;
         Appointments ap  =val.get();
         ap.setStatus("REFUNDED");
         return appointmentsRepository.save(ap);
-    }
+    }*/
 
 
     public Appointments reschedule(UUID appUuid,LocalDateTime updatedStarTime,LocalDateTime upDatedEndtime){
@@ -138,7 +138,7 @@ return li;
 
 
     public List<Appointments> getCommonAppointments(UUID patientId,UUID doctorId){
-        return appointmentsRepository.findByDoctor_IdAndPatient_Id(doctorId, patientId);
+        return appointmentsRepository.findByDoctorUserIdAndPatientUserId(doctorId, patientId);
     }
 
 

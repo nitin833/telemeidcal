@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.telimedical.HelperClasses.AppointmentObject;
+import com.project.telimedical.HelperClasses.AppointmentsReschedule;
 import com.project.telimedical.entities.Appointments;
+import com.project.telimedical.entities.Prescription;
 import com.project.telimedical.repository.AppointmentsRepository;
 import com.project.telimedical.services.AppointmentSerivce;
+import com.project.telimedical.services.PrescriptionService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +35,9 @@ public class AppointmentController {
 
     @Autowired
     private AppointmentsRepository appointmentsRepository;
+
+    @Autowired
+    private PrescriptionService prescriptionService;
 
     @GetMapping("/")
     public List<Appointments> getAllAppointments() {
@@ -68,14 +75,30 @@ public class AppointmentController {
     }
 
 
-    
-    
 
 
     
+  @PutMapping("/{id}/reschedule")
+  public Appointments rescheduleAppointment(@PathVariable String id, @RequestBody AppointmentsReschedule appointment) {
+    return appointmentSerivce.reschedule(UUID.fromString(id), appointment.getNewStartTime(), appointment.getNewEndTime());
+  }
+    
 
+  @PostMapping("/{aid}/prescription")
+  public Prescription postMethodName(@RequestBody Prescription prescription, @PathVariable String aid) {
+    return prescriptionService.savePrescription(prescription, UUID.fromString(aid));
+  }
 
+  @DeleteMapping("/{pid}/prescription")
+    public void deleteMethodName(@PathVariable String pid) {
+        prescriptionService.removePrescription(UUID.fromString(pid));
+    }
 
+    @PutMapping("/{pid}/prescription")
+    public Prescription putMethodName(@PathVariable String pid, @RequestBody Prescription prescription) {
+        return prescriptionService.updatePrescription(UUID.fromString(pid), prescription);
+     }
+  
 
     
 

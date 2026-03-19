@@ -1,9 +1,12 @@
 package com.project.telimedical.controllers;
 
+import com.project.telimedical.services.AppointmentSerivce;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.telimedical.HelperClasses.AppointmentsReschedule;
 import com.project.telimedical.HelperClasses.DoctorCreatorObject;
+import com.project.telimedical.entities.Appointments;
 import com.project.telimedical.entities.DoctorProfile;
 import com.project.telimedical.entities.Qualification;
 import com.project.telimedical.entities.Users;
@@ -28,8 +31,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/user")
 public class userController {
 
+    private final AppointmentSerivce appointmentSerivce;
     @Autowired
     private UserService userService;
+
+
+    userController(AppointmentSerivce appointmentSerivce) {
+        this.appointmentSerivce = appointmentSerivce;
+    }
     
 
     @GetMapping
@@ -83,6 +92,8 @@ public class userController {
     userService.removeUserById(UUID.fromString(id));
   }
     
+
+
 
   
 

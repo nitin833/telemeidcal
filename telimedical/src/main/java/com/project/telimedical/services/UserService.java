@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.Any;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.project.telimedical.Exceptions.HospitalNotFoundException;
@@ -35,10 +37,13 @@ public class UserService {
     @Autowired
     private HospitalRepository hospitalRepository;
 
+
+  @Cacheable(value = "allUsers")
    public List<Users> getAllUsers(){
     return userRepository.findAll();
    }
 
+    @Cacheable(value = "userById", key = "#id")
   public  Users getUserById(UUID id) throws UserNotFoundExceptions{
         if(id==null)
         return null;
@@ -51,11 +56,13 @@ public class UserService {
     }
    }
 
+    @CacheEvict(value = "allUsers", allEntries = true)
    @Transactional
   public Users createcustomer(Users user){
     return userRepository.save(user);
    }
 
+    @CacheEvict(value = "allUsers", allEntries = true)
    @Transactional
   public Users createDoctor(DoctorCreatorObject doctorCreatorObject){
 
@@ -79,7 +86,7 @@ public class UserService {
    }
 
 
-
+@CacheEvict(value = {"userById","allUsers"}, allEntries = true)
    @Transactional
   public Users updateuser(Users user,UUID id)throws UserNotFoundExceptions{
     Users u1 = getUserById(id);
@@ -92,6 +99,7 @@ public class UserService {
     return u1;
    }
 
+   @CacheEvict(value = {"userById","allUsers"}, allEntries = true)
    @Transactional
   public DoctorProfile updateDocterProfile(DoctorProfile doctorProfile,UUID id) throws UserNotFoundExceptions{
 
@@ -108,6 +116,7 @@ public class UserService {
     }
    }
 
+    @CacheEvict(value = {"userById","allUsers"}, allEntries = true)
    @Transactional
   public DoctorProfile addQualificationById(Qualification qualification,UUID id){
      Optional<DoctorProfile> val = doctorProfileRepository.findById(id);
@@ -122,7 +131,7 @@ public class UserService {
     }
    }
 
-
+    @CacheEvict(value = {"userById","allUsers"}, allEntries = true)
     @Transactional
   public DoctorProfile removeQualificationById(Qualification qualification,UUID id){
      Optional<DoctorProfile> val = doctorProfileRepository.findById(id);
@@ -137,6 +146,7 @@ public class UserService {
     }
    }
 
+   @CacheEvict(value = {"userById","allUsers"}, allEntries = true)
    @Transactional
   public void removeUserById(UUID id){
       Optional<Users> val = userRepository.findById(id);

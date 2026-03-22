@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import com.project.telimedical.Exceptions.AppointmentNotFound;
@@ -25,6 +26,7 @@ public class PrescriptionService {
     @Autowired
     private EntityManager entityManager;
 
+    
     @Transactional
     public Prescription savePrescription(Prescription pr,UUID apUuid){
 

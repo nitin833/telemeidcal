@@ -18,6 +18,9 @@ import com.project.telimedical.entities.Users;
 import com.project.telimedical.repository.AppointmentsRepository;
 import com.project.telimedical.repository.UserRepository;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
 @Service
 public class AppointmentSerivce {
     
@@ -31,7 +34,7 @@ public class AppointmentSerivce {
     @Autowired
     private UserService userService;
 
-
+    @Cacheable(value = "appointmentsByPatient", key = "#id")
     public List<Appointments> loadAppointmentsByPatientId(UUID id){
         List<Appointments> li = appointmentsRepository.findByPatientUserId(id);
         Collections.sort(li, new Comparator<Appointments>() {
@@ -48,7 +51,7 @@ public class AppointmentSerivce {
 return li;
     }
 
-
+    @Cacheable(value = "appointmentsByDoctor", key = "#id")
     public List<Appointments> loadAppointmentsByDoctorId(UUID id){
         List<Appointments> li = appointmentsRepository.findByDoctorUserId(id);
         Collections.sort(li, new Comparator<Appointments>() {
@@ -65,7 +68,7 @@ return li;
 return li;
     }
 
-
+    @CacheEvict(value = {"appointmentsByPatient", "appointmentsByDoctor"}, allEntries = true)
     public Appointments createAppointment(UUID patientId,UUID doctorId){
 
         Appointments ap = new Appointments();
@@ -81,7 +84,7 @@ return li;
 
     }
 
-
+    @CacheEvict(value = {"appointmentsByPatient", "appointmentsByDoctor"},allEntries = true)
     public Appointments acceptAppointments(UUID appoUuid){
 
         Optional<Appointments> val = appointmentsRepository.findById(appoUuid);
@@ -93,7 +96,7 @@ return li;
         return appointmentsRepository.save(ap);
     }
 
-
+        @CacheEvict(value = {"appointmentsByPatient", "appointmentsByDoctor"},allEntries = true)
       public Appointments cancelAppointments(UUID appoUuid){
 
         Optional<Appointments> val = appointmentsRepository.findById(appoUuid);
@@ -116,7 +119,7 @@ return li;
         return appointmentsRepository.save(ap);
     }*/
 
-
+    @CacheEvict(value = {"appointmentsByPatient", "appointmentsByDoctor"}, allEntries = true)
     public Appointments reschedule(UUID appUuid,LocalDateTime updatedStarTime,LocalDateTime upDatedEndtime){
 
          Optional<Appointments> val = appointmentsRepository.findById(appUuid);
@@ -136,7 +139,7 @@ return li;
         return appointmentsRepository.save(ap);
     }    
 
-
+   
     public List<Appointments> getCommonAppointments(UUID patientId,UUID doctorId){
         return appointmentsRepository.findByDoctorUserIdAndPatientUserId(doctorId, patientId);
     }

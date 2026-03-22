@@ -5,12 +5,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.project.telimedical.Exceptions.HospitalNotFoundException;
 import com.project.telimedical.entities.Hospital;
 import com.project.telimedical.entities.Users;
 import com.project.telimedical.repository.HospitalRepository;
+
 
 import jakarta.transaction.Transactional;
 
@@ -23,11 +26,13 @@ public class HospitalService {
     @Autowired
     private UserService userService;
  
+    @CacheEvict(value = "allHospitals", allEntries = true)
     @Transactional
     public Hospital createHospital(Hospital hs){
         return hospitalRepository.save(hs);
     }
 
+    @Cacheable(value = "hospitalById", key = "#id")
     public Hospital getHospitalById(UUID id){
         Optional<Hospital> val  = hospitalRepository.findById(id);
         if(val.isEmpty())
@@ -35,10 +40,12 @@ public class HospitalService {
         return val.get();
     }
 
+    @Cacheable(value = "allHospitals")
     public List<Hospital> getAllHospitals(){
         return hospitalRepository.findAll();
     }
 
+    @CacheEvict(value = {"hospitalById","allHospitals"}, allEntries = true)
     @Transactional
     public void AddOwnerToHospital(UUID owneUuid,UUID hUuid){
         Hospital h = getHospitalById(hUuid);
@@ -46,6 +53,7 @@ public class HospitalService {
         hospitalRepository.save(h);
     }
 
+    @CacheEvict(value = {"hospitalById","allHospitals"}, allEntries = true)
     @Transactional
     public void AddDoctorToHospital(UUID doUuid,UUID hUuid){
         Hospital h = getHospitalById(hUuid);
@@ -53,7 +61,7 @@ public class HospitalService {
         hospitalRepository.save(h);
     }
 
-
+    @CacheEvict(value = {"hospitalById","allHospitals"}, allEntries = true)
     @Transactional
     public Hospital changeDescription(UUID uid,String desc){
           Optional<Hospital> val  = hospitalRepository.findById(uid);
@@ -64,6 +72,7 @@ public class HospitalService {
         return hospitalRepository.save(hp);
     }
 
+    @CacheEvict(value = {"hospitalById","allHospitals"}, allEntries = true)
     @Transactional 
     public void removeDoctor(UUID hoUuid,UUID userid){
           Optional<Hospital> val  = hospitalRepository.findById(hoUuid);
@@ -74,7 +83,7 @@ public class HospitalService {
         hospitalRepository.save(hp);
     }
 
-
+        @CacheEvict(value = {"hospitalById","allHospitals"}, allEntries = true)
      @Transactional 
     public void removeOwner(UUID hoUuid,UUID userid){
           Optional<Hospital> val  = hospitalRepository.findById(hoUuid);

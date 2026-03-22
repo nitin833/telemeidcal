@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
 import com.project.telimedical.Exceptions.UserNotFoundExceptions;
@@ -22,6 +22,7 @@ import com.project.telimedical.entities.Users;
 import com.project.telimedical.services.UserService;
 
 @SpringBootApplication
+@EnableCaching
 public class TelimedicalApplication {
 
 

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.telimedical.HelperClasses.AppointmentsReschedule;
 import com.project.telimedical.HelperClasses.DoctorCreatorObject;
+import com.project.telimedical.HelperClasses.LoginResponce;
 import com.project.telimedical.entities.Appointments;
 import com.project.telimedical.entities.DoctorProfile;
 import com.project.telimedical.entities.Qualification;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,11 +45,12 @@ public class userController {
     
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Users> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id")
+    @GetMapping("/{id}")
     public Users getUserById(@PathVariable String id){
 
         UUID uuid = UUID.fromString(id);
@@ -54,11 +58,13 @@ public class userController {
     }
 
     @PostMapping("/addUser")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     public Users addCustomer(@RequestBody Users users) {
         return userService.createcustomer(users);
     }
 
       @PostMapping("/addDoctor")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     public Users createdoctor(@RequestBody DoctorCreatorObject doc) {
         return userService.createDoctor(doc);
     }
@@ -69,6 +75,7 @@ public class userController {
   }
 
   @PutMapping("/{id}/doctor")
+  @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN') or hasRole('OWNER')")
   public DoctorProfile updateDoctorProfile(@PathVariable String id, @RequestBody DoctorProfile doctorProfile) {
     return userService.updateDocterProfile(doctorProfile, UUID.fromString(id));
   }
@@ -91,6 +98,10 @@ public class userController {
   public void deleteUser(@PathVariable String id) {
     userService.removeUserById(UUID.fromString(id));
   }
+
+
+
+  
     
 
 

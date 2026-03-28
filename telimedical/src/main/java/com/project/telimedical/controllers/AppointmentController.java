@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.telimedical.HelperClasses.AppointmentObject;
@@ -39,37 +40,43 @@ public class AppointmentController {
     @Autowired
     private PrescriptionService prescriptionService;
 
-    @GetMapping("/")
+    /*@GetMapping("/")
     public List<Appointments> getAllAppointments() {
         return appointmentsRepository.findAll();
-    }
+    }*/
 
     @GetMapping("/byDoctor")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     public List<Appointments> getAppointmentsByDoctor(@RequestParam String doctorId) {
         return appointmentSerivce.loadAppointmentsByDoctorId(UUID.fromString(doctorId));
     }
     
     @GetMapping("/byPatient")
+    @PreAuthorize("hasRole('PATIENT')")
     public List<Appointments> getAppointmentsByPatient(@RequestParam String patientId) {   
         return appointmentSerivce.loadAppointmentsByPatientId(UUID.fromString(patientId));
     }
 
     @GetMapping("/byDoctorAndPatient")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     public List<Appointments> getAppointmentsByDoctorAndPatient(@RequestParam String doctorId,  @RequestParam String patientId) {
         return appointmentSerivce.getCommonAppointments(UUID.fromString(doctorId), UUID.fromString(patientId));
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('PATIENT')")
     public Appointments crAppointments(@RequestBody  AppointmentObject appointmentObject) {
         return appointmentSerivce.createAppointment(appointmentObject.getPatientId(), appointmentObject.getDoctorId());
     }
 
     @PutMapping("/{id}/accept")
+    @PreAuthorize("hasRole('DOCTOR')")
     public Appointments accAppointments(@PathVariable String id) {
         return appointmentSerivce.acceptAppointments(UUID.fromString(id));
     }
 
     @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('DOCTOR') ")
     public Appointments caAppointments(@PathVariable String id) {
         return appointmentSerivce.cancelAppointments(UUID.fromString(id));
     }
@@ -79,22 +86,26 @@ public class AppointmentController {
 
     
   @PutMapping("/{id}/reschedule")
+  @PreAuthorize("hasRole('DOCTOR') ")
   public Appointments rescheduleAppointment(@PathVariable String id, @RequestBody AppointmentsReschedule appointment) {
     return appointmentSerivce.reschedule(UUID.fromString(id), appointment.getNewStartTime(), appointment.getNewEndTime());
   }
     
 
   @PostMapping("/{aid}/prescription")
+   @PreAuthorize("hasRole('DOCTOR') ")
   public Prescription postMethodName(@RequestBody Prescription prescription, @PathVariable String aid) {
     return prescriptionService.savePrescription(prescription, UUID.fromString(aid));
   }
 
   @DeleteMapping("/{pid}/prescription")
+   @PreAuthorize("hasRole('DOCTOR') ")
     public void deleteMethodName(@PathVariable String pid) {
         prescriptionService.removePrescription(UUID.fromString(pid));
     }
 
     @PutMapping("/{pid}/prescription")
+     @PreAuthorize("hasRole('DOCTOR') ")
     public Prescription putMethodName(@PathVariable String pid, @RequestBody Prescription prescription) {
         return prescriptionService.updatePrescription(UUID.fromString(pid), prescription);
      }

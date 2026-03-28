@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import com.project.telimedical.Exceptions.UserNotFoundExceptions;
 import com.project.telimedical.HelperClasses.DoctorCreatorObject;
@@ -23,6 +24,7 @@ import com.project.telimedical.services.UserService;
 
 @SpringBootApplication
 @EnableCaching
+@EnableMethodSecurity
 public class TelimedicalApplication {
 
 

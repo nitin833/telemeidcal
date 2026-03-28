@@ -31,7 +31,7 @@ public class CustomUserDetailService implements UserDetailsService{
         }
       Users user = userOptional.get();
 
-      List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
+      List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_"+user.getRole().name()));
       return new User(user.getUsername(), user.getPassword(), authorities);
 
         // You can use the UserRepository to fetch user data based on the username.

@@ -1,12 +1,28 @@
 package com.project.telimedical.configurations;
 
+import java.util.Arrays;
+
+import org.apache.tomcat.util.file.ConfigurationSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.cors.CorsConfiguration;
+
+import com.project.telimedical.filters.JwtTokenGeneratorFilter;
+import com.project.telimedical.filters.JwtValidationFilter;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 public class ProjectSecurityConfig {
@@ -15,8 +31,29 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
 
 
-        http.authorizeHttpRequests((requests)->requests.anyRequest().authenticated());
+   
+
+    http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    config.setAllowedHeaders(Arrays.asList("*"));
+    config.setAllowCredentials(true);
+    return config;
+    }))
+   .csrf(csrf->csrf.disable()).
+    authorizeHttpRequests((requests)->requests.
+    requestMatchers("/login").permitAll()
+    .requestMatchers("/hospital/**").hasRole("OWNER").
+    anyRequest().authenticated());
+
+    http.addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class);
+    http.addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class);
+    
+
+
         http.formLogin(fl->fl.disable());
+        
         return http.build();
     }
 
@@ -25,6 +62,6 @@ public class ProjectSecurityConfig {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
 
-
+ 
 
 }

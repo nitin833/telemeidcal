@@ -9,6 +9,7 @@ import com.project.telimedical.services.HospitalService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class HospitalController {
     
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Hospital> getHospitals(@RequestParam String param) {
         return hospitalService.getAllHospitals();
     }
@@ -40,11 +42,13 @@ public class HospitalController {
 
 
     @PostMapping("/")
+        @PreAuthorize("hasRole('ADMIN')")
     public Hospital createHospital(@RequestBody Hospital hospital) {
         return hospitalService.createHospital(hospital);
     }
 
     @PutMapping("/addOwner/{hosid}/{ownerid}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void addowner(@PathVariable String hosid, @PathVariable String ownerid) {
         hospitalService.AddOwnerToHospital( java.util.UUID.fromString(ownerid),java.util.UUID.fromString(hosid));
     }
@@ -60,6 +64,7 @@ public class HospitalController {
     }
 
     @PutMapping("removeOwner/{hosid}/{ownerid}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void putMethodName(@PathVariable String id, @PathVariable String ownerid) {
         hospitalService.removeOwner( java.util.UUID.fromString(ownerid),java.util.UUID.fromString(id));
     

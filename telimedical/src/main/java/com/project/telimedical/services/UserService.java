@@ -9,6 +9,7 @@ import org.hibernate.annotations.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.telimedical.Exceptions.HospitalNotFoundException;
@@ -37,6 +38,7 @@ public class UserService {
     @Autowired
     private HospitalRepository hospitalRepository;
 
+    
 
   @Cacheable(value = "allUsers")
    public List<Users> getAllUsers(){
@@ -59,6 +61,8 @@ public class UserService {
     @CacheEvict(value = "allUsers", allEntries = true)
    @Transactional
   public Users createcustomer(Users user){
+    user.setRole(Role.PATIENT);
+   // System.out.println(user.getEmail());
     return userRepository.save(user);
    }
 
@@ -168,3 +172,4 @@ public class UserService {
 
     
 }
+

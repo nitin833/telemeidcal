@@ -35,7 +35,60 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.use(express.json());
+
+
+app.use(async (req,res,next)=>{
+
+    const token = req.headers.authorization;
+    if(!token){
+        return res.status(401).json({error:"Unauthorized"});
+    }
+    token = token.split(" ")[1];
+    try{
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded. authorities;
+        next();
+    }catch(err){
+        return res.status(401).json({error:"Unauthorized"});
+    }
+
+
+
+})
+
+
+app.use(express.static('uploads'));
 app.use("/chat",chatController);
+
+app.get("/nearestHospitals/:distance",async (req,res)=>{
+
+let {latitude,longitude} = req.query;
+let distance = req.params.distance;
+
+
+let list = await Hospital.find({
+    location: {
+        $near: {
+            $geometry: {
+                type: "Point",
+                coordinates: [parseFloat(longitude), parseFloat(latitude)]
+            },
+            $maxDistance: parseFloat(distance)
+        }
+    }});
+
+    res.json(list);
+})
+
+
+app.use((req,res,next)=>{
+    const arr = req.authorities;
+    if(arr.includes("ROLE_ADMIN") || arr.includes("ROLE_OWNER") || arr.includes("ROLE_DOCTOR")){
+        next();
+    }else{
+        return res.status(403).json({error:"Forbidden"});
+    }
+});
 
 
 app.post("/upload", upload.single('file'), (req, res) => {
@@ -44,6 +97,16 @@ app.post("/upload", upload.single('file'), (req, res) => {
     }
     res.json({ message: 'File uploaded successfully', file: req.file ,path: req.file.path});
 });
+
+app.use((req,res,next)=>{
+    const arr = req.authorities;
+    if(arr.includes("ROLE_ADMIN") || arr.includes("ROLE_OWNER")){
+        next();
+    }else{
+        return res.status(403).json({error:"Forbidden"});
+    }
+});
+
 
 app.get("/files/:filename", (req, res) => {
     const filename = req.params.filename;
@@ -80,25 +143,6 @@ app.put("/files/:filename",fileremove ,upload.single('file'), (req, res) => {
 
 
 
-app.get("/nearestHospitals/:distance",async (req,res)=>{
-
-let {latitude,longitude} = req.query;
-let distance = req.params.distance;
-
-
-let list = await Hospital.find({
-    location: {
-        $near: {
-            $geometry: {
-                type: "Point",
-                coordinates: [parseFloat(longitude), parseFloat(latitude)]
-            },
-            $maxDistance: parseFloat(distance)
-        }
-    }});
-
-    res.json(list);
-})
 
 
 app.post("/addHospital",async (req,res)=>{

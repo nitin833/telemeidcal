@@ -4,12 +4,14 @@ import com.project.telimedical.services.AppointmentSerivce;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.telimedical.HelperClasses.AddUser;
 import com.project.telimedical.HelperClasses.AppointmentsReschedule;
 import com.project.telimedical.HelperClasses.DoctorCreatorObject;
 import com.project.telimedical.HelperClasses.LoginResponce;
 import com.project.telimedical.entities.Appointments;
 import com.project.telimedical.entities.DoctorProfile;
 import com.project.telimedical.entities.Qualification;
+import com.project.telimedical.entities.Role;
 import com.project.telimedical.entities.Users;
 import com.project.telimedical.services.UserService;
 
@@ -17,8 +19,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.security.autoconfigure.SecurityProperties.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,6 +41,9 @@ public class userController {
     private final AppointmentSerivce appointmentSerivce;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     userController(AppointmentSerivce appointmentSerivce) {
@@ -58,14 +65,23 @@ public class userController {
     }
 
     @PostMapping("/addUser")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    public Users addCustomer(@RequestBody Users users) {
-        return userService.createcustomer(users);
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
+    public Users addCustomer(@RequestBody AddUser users) {
+     // System.out.println(users.getEmail());
+     System.out.println("in the controller");
+        Users u = new Users();
+          u.setEmail(users.getEmail());
+          u.setPassword(passwordEncoder.encode(users.getPassword()));
+          u.setUsername(users.getUsername());
+          u.setRole(Role.PATIENT);
+      
+        return userService.createcustomer(u);
     }
 
       @PostMapping("/addDoctor")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     public Users createdoctor(@RequestBody DoctorCreatorObject doc) {
+      doc.setPassword(passwordEncoder.encode(doc.getPassword()));
         return userService.createDoctor(doc);
     }
 

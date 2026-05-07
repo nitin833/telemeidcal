@@ -40,6 +40,25 @@ public class AppointmentController {
     @Autowired
     private PrescriptionService prescriptionService;
 
+
+    public UUID convertToUUID(String id) {
+
+    if (id.startsWith("0x")) {
+        id = id.substring(2); // remove 0x
+    }
+
+    id = id.toLowerCase();
+
+    // format into UUID structure
+    String formatted = id.substring(0, 8) + "-" +
+                       id.substring(8, 12) + "-" +
+                       id.substring(12, 16) + "-" +
+                       id.substring(16, 20) + "-" +
+                       id.substring(20);
+
+    return UUID.fromString(formatted);
+}
+
     /*@GetMapping("/")
     public List<Appointments> getAllAppointments() {
         return appointmentsRepository.findAll();
@@ -51,12 +70,14 @@ public class AppointmentController {
         return appointmentSerivce.loadAppointmentsByDoctorId(UUID.fromString(doctorId));
     }
     
-    @GetMapping("/byPatient")
-    @PreAuthorize("hasRole('PATIENT')")
-    public List<Appointments> getAppointmentsByPatient(@RequestParam String patientId) {   
-        return appointmentSerivce.loadAppointmentsByPatientId(UUID.fromString(patientId));
-    }
+  @GetMapping("/byPatient")
+@PreAuthorize("hasRole('PATIENT')")
+public List<Appointments> getAppointmentsByPatient(@RequestParam String patientId) {  
 
+    UUID uuid = convertToUUID(patientId);
+
+    return appointmentSerivce.loadAppointmentsByPatientId(uuid);
+}
     @GetMapping("/byDoctorAndPatient")
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     public List<Appointments> getAppointmentsByDoctorAndPatient(@RequestParam String doctorId,  @RequestParam String patientId) {

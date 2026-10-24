@@ -4,8 +4,7 @@ const cors = require('cors');
 const multer = require('multer');
 const app = express();
 app.use(cors());
-const connectDb = require("./config/db");
-connectDb();
+const { connectDb, disconnectDb } = require("./config/db");
 
 const path = require('path');
 const jwt = require('jsonwebtoken');
@@ -172,7 +171,26 @@ app.delete("/deleteHospital/:id",async (req,res)=>{
     res.json({message:"Hospital deleted successfully"});
 });
 
-const server = app.listen(3000,()=>{
-    console.log("server is running on port 3000");
-    IO.init(server);
+const startServer = async () => {
+    await connectDb();
+
+    const server = app.listen(3000, () => {
+        console.log("server is running on port 3000");
+        IO.init(server);
+    });
+
+    const shutdown = async () => {
+        server.close(async () => {
+            await disconnectDb();
+            process.exit(0);
+        });
+    };
+
+    process.once("SIGINT", shutdown);
+    process.once("SIGTERM", shutdown);
+};
+
+startServer().catch((error) => {
+    console.error("Failed to start the server", error);
+    process.exit(1);
 });

@@ -35,14 +35,15 @@ public class ProjectSecurityConfig {
 
    
 
-    /*http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+    http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+    config.setAllowedOriginPatterns(Arrays.asList("*"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     config.setAllowedHeaders(Arrays.asList("*"));
     config.setAllowCredentials(true);
+    config.setExposedHeaders(Arrays.asList("Authorization"));
     return config;
-    }))*/http.httpBasic(Customizer.withDefaults()).cors(cors->cors.disable())
+    })).httpBasic(Customizer.withDefaults())
    .csrf(csrf->csrf.disable()).
     authorizeHttpRequests((requests)->requests.
     requestMatchers("/user/addUser").permitAll()

@@ -14,7 +14,7 @@ return c.save();
 
 const activateChat =async (Appoid)=>{
 
-let c = await Chat.findById({appointmentId:Appoid});
+let c = await Chat.findOne({appointmentId:Appoid});
     if(c==null){
         const error = new Error();
         error.message = "cannot get chat with appointment";
@@ -26,7 +26,7 @@ let c = await Chat.findById({appointmentId:Appoid});
 
 const deactivateChat = async (Appoid)=>{
 
-    let c = await Chat.findById({appointmentId:Appoid});
+    let c = await Chat.findOne({appointmentId:Appoid});
     if(c==null){
         const error = new Error();
         error.message = "cannot get chat with appointment";
@@ -41,13 +41,13 @@ const deactivateChat = async (Appoid)=>{
 const sendMessage = async (Appoid,reciver,sender,message)=>{
 
     
-    let c = await Chat.findById({appointmentId:Appoid});
+    let c = await Chat.findOne({appointmentId:Appoid});
     if(c==null){
         const error = new Error();
         error.message = "cannot get chat with appointment";
         throw error;
     }
-    let m = new Message({senderId:sender,text:message});
+    let m = new Messages({senderId:sender,text:message});
     c.messages.push(m);
     c.save().then((data)=>{
 

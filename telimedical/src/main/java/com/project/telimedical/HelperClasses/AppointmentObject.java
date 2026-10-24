@@ -4,32 +4,33 @@ import java.util.UUID;
 
 public class AppointmentObject {
     
-    private UUID doctorId;
-    private UUID patientId;
+    private String doctorId;
+    private String patientId;
 
-    public UUID getDoctorId() {
+    public String getDoctorId() {
         return doctorId;
     }
 
-    public void setDoctorId(UUID doctorId) {
+    public void setDoctorId(String doctorId) {
         this.doctorId = doctorId;
     }
 
-    public UUID getPatientId() {
+    public String getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(UUID patientId) {
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+
+    public AppointmentObject(String doctorId, String patientId) {
+        this.doctorId = doctorId;
         this.patientId = patientId;
     }
 
     public AppointmentObject() {
-    
     }
 
-    public AppointmentObject(UUID doctorId, UUID patientId) {
-        this.doctorId = doctorId;
-        this.patientId = patientId;
-    }
+
 
 }

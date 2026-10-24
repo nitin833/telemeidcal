@@ -25,4 +25,4 @@ const hospitalSchema = new mongoose.Schema({
 
 
 hospitalSchema.index({location:"2dsphere"})
-module.exports = mongoose.model(hospitalSchema,"hospital")
+module.exports = mongoose.model("hospital",hospitalSchema);

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
+import com.project.telimedical.util.UUIDHandler;
 
 
 @RestController
@@ -34,30 +34,12 @@ public class AppointmentController {
     @Autowired
     private AppointmentSerivce appointmentSerivce;
 
-    @Autowired
-    private AppointmentsRepository appointmentsRepository;
-
+   
     @Autowired
     private PrescriptionService prescriptionService;
 
 
-    public UUID convertToUUID(String id) {
 
-    if (id.startsWith("0x")) {
-        id = id.substring(2); // remove 0x
-    }
-
-    id = id.toLowerCase();
-
-    // format into UUID structure
-    String formatted = id.substring(0, 8) + "-" +
-                       id.substring(8, 12) + "-" +
-                       id.substring(12, 16) + "-" +
-                       id.substring(16, 20) + "-" +
-                       id.substring(20);
-
-    return UUID.fromString(formatted);
-}
 
     /*@GetMapping("/")
     public List<Appointments> getAllAppointments() {
@@ -67,39 +49,47 @@ public class AppointmentController {
     @GetMapping("/byDoctor")
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     public List<Appointments> getAppointmentsByDoctor(@RequestParam String doctorId) {
-        return appointmentSerivce.loadAppointmentsByDoctorId(UUID.fromString(doctorId));
+        UUID uuid = UUIDHandler.convertToUUID(doctorId);
+        return appointmentSerivce.loadAppointmentsByDoctorId(uuid);
     }
     
   @GetMapping("/byPatient")
 @PreAuthorize("hasRole('PATIENT')")
 public List<Appointments> getAppointmentsByPatient(@RequestParam String patientId) {  
 
-    UUID uuid = convertToUUID(patientId);
+    UUID uuid = UUIDHandler.convertToUUID(patientId);
 
     return appointmentSerivce.loadAppointmentsByPatientId(uuid);
 }
     @GetMapping("/byDoctorAndPatient")
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     public List<Appointments> getAppointmentsByDoctorAndPatient(@RequestParam String doctorId,  @RequestParam String patientId) {
-        return appointmentSerivce.getCommonAppointments(UUID.fromString(doctorId), UUID.fromString(patientId));
+        UUID doctorUuid = UUIDHandler.convertToUUID(doctorId);
+        UUID patientUuid = UUIDHandler.convertToUUID(patientId);
+            return appointmentSerivce.getCommonAppointments(doctorUuid, patientUuid);
     }
 
     @PostMapping("/")
     @PreAuthorize("hasRole('PATIENT')")
     public Appointments crAppointments(@RequestBody  AppointmentObject appointmentObject) {
-        return appointmentSerivce.createAppointment(appointmentObject.getPatientId(), appointmentObject.getDoctorId());
+        UUID patientUuid = UUIDHandler.convertToUUID(appointmentObject.getPatientId());
+        UUID doctorUuid = UUIDHandler.convertToUUID(appointmentObject.getDoctorId());
+        return appointmentSerivce.createAppointment(patientUuid, doctorUuid);
     }
 
+    
     @PutMapping("/{id}/accept")
     @PreAuthorize("hasRole('DOCTOR')")
     public Appointments accAppointments(@PathVariable String id) {
-        return appointmentSerivce.acceptAppointments(UUID.fromString(id));
+        UUID appointmentUuid = UUIDHandler.convertToUUID(id);
+        return appointmentSerivce.acceptAppointments(appointmentUuid);
     }
 
     @PutMapping("/{id}/cancel")
     @PreAuthorize("hasRole('DOCTOR') ")
     public Appointments caAppointments(@PathVariable String id) {
-        return appointmentSerivce.cancelAppointments(UUID.fromString(id));
+        UUID appointmentUuid = UUIDHandler.convertToUUID(id);
+        return appointmentSerivce.cancelAppointments(appointmentUuid);
     }
 
 
@@ -109,26 +99,30 @@ public List<Appointments> getAppointmentsByPatient(@RequestParam String patientI
   @PutMapping("/{id}/reschedule")
   @PreAuthorize("hasRole('DOCTOR') ")
   public Appointments rescheduleAppointment(@PathVariable String id, @RequestBody AppointmentsReschedule appointment) {
-    return appointmentSerivce.reschedule(UUID.fromString(id), appointment.getNewStartTime(), appointment.getNewEndTime());
+    UUID appointmentUuid = UUIDHandler.convertToUUID(id);
+    return appointmentSerivce.reschedule(appointmentUuid, appointment.getNewStartTime(), appointment.getNewEndTime());
   }
     
 
   @PostMapping("/{aid}/prescription")
    @PreAuthorize("hasRole('DOCTOR') ")
   public Prescription postMethodName(@RequestBody Prescription prescription, @PathVariable String aid) {
-    return prescriptionService.savePrescription(prescription, UUID.fromString(aid));
+    UUID appointmentUuid = UUIDHandler.convertToUUID(aid);
+    return prescriptionService.savePrescription(prescription, appointmentUuid);
   }
 
   @DeleteMapping("/{pid}/prescription")
    @PreAuthorize("hasRole('DOCTOR') ")
     public void deleteMethodName(@PathVariable String pid) {
-        prescriptionService.removePrescription(UUID.fromString(pid));
+        UUID prescriptionUuid = UUIDHandler.convertToUUID(pid);
+        prescriptionService.removePrescription(prescriptionUuid);
     }
 
     @PutMapping("/{pid}/prescription")
      @PreAuthorize("hasRole('DOCTOR') ")
     public Prescription putMethodName(@PathVariable String pid, @RequestBody Prescription prescription) {
-        return prescriptionService.updatePrescription(UUID.fromString(pid), prescription);
+        UUID prescriptionUuid = UUIDHandler.convertToUUID(pid);
+        return prescriptionService.updatePrescription(prescriptionUuid, prescription);
      }
   
 

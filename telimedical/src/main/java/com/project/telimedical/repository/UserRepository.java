@@ -9,11 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.project.telimedical.entities.Users;;
 
 
-public interface UserRepository extends JpaRepository<Users,UUID> {
+public interface UserRepository extends JpaRepository<Users, UUID> {
 
     Optional<Users> findByUsername(String username);
 
-
-    
-    
+    java.util.List<Users> findByRole(com.project.telimedical.entities.Role role);
 }
+

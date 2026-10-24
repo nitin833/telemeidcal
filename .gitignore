@@ -1,33 +1,42 @@
+# Environment variables and secrets
 .env
 .env.*
+!.env.example
+
+# Node.js dependencies
 node_modules/
+telemedical_frontend/node_modules/
+telemedical_node/node_modules/
+
+# React build output
+telemedical_frontend/build/
+
+# Java / Maven build output
 target/
 *.class
 *.jar
 *.war
 *.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE files
 *.iml
-.mvn/
-mvnw
-mvnw.cmd
+.idea/
+.vscode/
 
-/node_modules
-/.pnp
+# Maven wrapper scripts
+# Keep these if your project uses the Maven Wrapper
+# mvnw
+# mvnw.cmd
+
+# React / Node.js
+.pnp
 .pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
+coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Local OS files
+.DS_Store
+Thumbs.db

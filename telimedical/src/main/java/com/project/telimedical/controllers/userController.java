@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
+import com.project.telimedical.util.UUIDHandler;
 
 
 @RestController
@@ -60,7 +60,7 @@ public class userController {
     @GetMapping("/{id}")
     public Users getUserById(@PathVariable String id){
 
-        UUID uuid = UUID.fromString(id);
+        UUID uuid = UUIDHandler.convertToUUID(id);
         return userService.getUserById(uuid);
     }
 
@@ -87,13 +87,15 @@ public class userController {
 
   @PutMapping("/{id}/user")
   public Users updateUser(@PathVariable String id, @RequestBody Users user) {
-    return userService.updateuser(user, UUID.fromString(id));
+    UUID uuid = UUIDHandler.convertToUUID(id);
+    return userService.updateuser(user, uuid);
   }
 
   @PutMapping("/{id}/doctor")
   @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN') or hasRole('OWNER')")
   public DoctorProfile updateDoctorProfile(@PathVariable String id, @RequestBody DoctorProfile doctorProfile) {
-    return userService.updateDocterProfile(doctorProfile, UUID.fromString(id));
+    UUID uuid = UUIDHandler.convertToUUID(id);
+    return userService.updateDocterProfile(doctorProfile, uuid);
   }
 
   
@@ -101,18 +103,21 @@ public class userController {
     
   @PutMapping("/{id}/add")
   public DoctorProfile addQualification(@PathVariable String id, @RequestBody Qualification qualification) {
-    return userService.addQualificationById(qualification, UUID.fromString(id));
+    UUID uuid = UUIDHandler.convertToUUID(id);
+    return userService.addQualificationById(qualification, uuid);
   }   
   
    @PutMapping("/{id}/remove")
   public DoctorProfile removeQualification(@PathVariable String id, @RequestBody Qualification qualification) {
-    return userService.removeQualificationById(qualification, UUID.fromString(id));
+    UUID uuid = UUIDHandler.convertToUUID(id);
+    return userService.removeQualificationById(qualification, uuid);
   }   
   
 
   @DeleteMapping("/{id}")
   public void deleteUser(@PathVariable String id) {
-    userService.removeUserById(UUID.fromString(id));
+    UUID uuid = UUIDHandler.convertToUUID(id);
+    userService.removeUserById(uuid);
   }
 
 

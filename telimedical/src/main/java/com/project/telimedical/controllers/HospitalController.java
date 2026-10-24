@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.telimedical.entities.Hospital;
 import com.project.telimedical.services.HospitalService;
+import java.util.UUID;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
+import com.project.telimedical.util.UUIDHandler;
 
 
 @RestController
@@ -37,7 +38,8 @@ public class HospitalController {
 
     @GetMapping("/{id}")
     public Hospital getHospitalsBYId(@PathVariable String id) {
-        return hospitalService.getHospitalById(java.util.UUID.fromString(id)); 
+        UUID hospitalUuid = UUIDHandler.convertToUUID(id);
+        return hospitalService.getHospitalById(hospitalUuid); 
     }
 
 
@@ -50,30 +52,39 @@ public class HospitalController {
     @PutMapping("/addOwner/{hosid}/{ownerid}")
     @PreAuthorize("hasRole('ADMIN')")
     public void addowner(@PathVariable String hosid, @PathVariable String ownerid) {
-        hospitalService.AddOwnerToHospital( java.util.UUID.fromString(ownerid),java.util.UUID.fromString(hosid));
+        UUID hospitalUuid = UUIDHandler.convertToUUID(hosid);
+        UUID ownerUuid = UUIDHandler.convertToUUID(ownerid);
+        hospitalService.AddOwnerToHospital( ownerUuid,hospitalUuid);
     }
 
     @PutMapping("/addDoctor/{hosid}/{doctorid}")
-    public void adddocter(@PathVariable String id, @PathVariable String doctorid) {
-        hospitalService.AddDoctorToHospital( java.util.UUID.fromString(doctorid),java.util.UUID.fromString(id));
+    public void adddocter(@PathVariable String hosid, @PathVariable String doctorid) {
+        UUID hospitalUuid = UUIDHandler.convertToUUID(hosid);
+        UUID doctorUuid = UUIDHandler.convertToUUID(doctorid);
+        hospitalService.AddDoctorToHospital( doctorUuid,hospitalUuid);
     }
 
      @PutMapping("/changeDescription/{hosid}")
-    public Hospital changeDescription(@PathVariable String id,@RequestParam String desc) {
-        return hospitalService.changeDescription(java.util.UUID.fromString(id),desc);
+    public Hospital changeDescription(@PathVariable String hosid,@RequestParam String desc) {
+        UUID hospitalUuid = UUIDHandler.convertToUUID(hosid);
+        return hospitalService.changeDescription(hospitalUuid,desc);
     }
 
     @PutMapping("removeOwner/{hosid}/{ownerid}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void putMethodName(@PathVariable String id, @PathVariable String ownerid) {
-        hospitalService.removeOwner( java.util.UUID.fromString(ownerid),java.util.UUID.fromString(id));
+    public void removeOwner(@PathVariable String hosid, @PathVariable String ownerid) {
+        UUID hospitalUuid = UUIDHandler.convertToUUID(hosid);
+        UUID ownerUuid = UUIDHandler.convertToUUID(ownerid);
+        hospitalService.removeOwner( ownerUuid,hospitalUuid);
     
       
     }
 
         @PutMapping("removeDoctor/{hosid}/{doctorid}")
-    public void removeDoctor(@PathVariable String id, @PathVariable String doctorid) {
-        hospitalService.removeDoctor( java.util.UUID.fromString(doctorid),java.util.UUID.fromString(id));
+    public void removeDoctor(@PathVariable String hosid, @PathVariable String doctorid) {
+        UUID   hospitalUuid = UUIDHandler.convertToUUID(hosid);
+        UUID doctorUuid = UUIDHandler.convertToUUID(doctorid);
+        hospitalService.removeDoctor( doctorUuid,hospitalUuid);
     }
 
 

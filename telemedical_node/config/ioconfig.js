@@ -10,11 +10,16 @@ const IO = {
 
     init:(server)=>{
 
-        io = require("socket.io")(server);
+        io = require("socket.io")(server, {
+            cors: {
+                origin: "*",
+                methods: ["GET", "POST"]
+            }
+        });
         io.on("connection", (socket) => {
 
     const userId = socket.handshake.auth.userId;
-    users[userId]=socket.id;
+    IO.users[userId] = socket.id;
 
     /*
             use this in frontend      

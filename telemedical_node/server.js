@@ -1,19 +1,25 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const multer = require('multer');
 const app = express();
+app.use(cors());
+const connectDb = require("./config/db");
+connectDb();
 
 const path = require('path');
-
+const jwt = require('jsonwebtoken');
 
 const chatController = require("./controllers/chatController");
 const IO = require("./config/ioconfig");
+const Hospital = require("./models/hospitals");
+const fs = require('fs');
 
-import {Hospital} from "./models/hospitalModel";
 
 const fileremove = (req,res,next)=>{
     const filename = req.params.filename;
     const filePath = `uploads/${filename}`;
-    path.unlink(filePath, (err) => {
+    fs.unlink(filePath, (err) => {
         if (err) {
             return res.status(404).json({ error: 'File not found' });
         }
@@ -39,14 +45,14 @@ app.use(express.json());
 
 app.use(async (req,res,next)=>{
 
-    const token = req.headers.authorization;
+    let token = req.headers.authorization;
     if(!token){
         return res.status(401).json({error:"Unauthorized"});
     }
     token = token.split(" ")[1];
     try{
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded. authorities;
+        req.authorities = decoded.authorities || [];
         next();
     }catch(err){
         return res.status(401).json({error:"Unauthorized"});
@@ -121,7 +127,7 @@ app.get("/files/:filename", (req, res) => {
 app.delete("/files/:filename", (req, res) => {
     const filename = req.params.filename;
     const filePath = `uploads/${filename}`;
-    path.unlink(filePath, (err) => {
+    fs.unlink(filePath, (err) => {
         if (err) {
             return res.status(404).json({ error: 'File not found' });
         }
